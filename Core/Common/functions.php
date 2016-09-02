@@ -37,3 +37,25 @@ function session($name, $value=''){
     }
 
 }
+
+/*
+ * 加载动态扩展文件
+ * @return void
+ */
+function load_ext_file(){
+    //加载自定义外部文件
+    if(C('LOAD_EXT_FILE')){
+
+    }
+    //加载自定义的动态配置文件
+    if(C('LOAD_EXT_CONFIG')){
+        $configs = C('LOAD_EXT_CONFIG');
+        if(is_string($configs)) $configs = explode(',', $configs);
+        foreach($configs as $key=>$config){
+            $file = CONF_PATH.$config.'.php';
+            if(is_file($file)){
+                is_numeric($key) ? C(include $file) : C($key, include $file);
+            }
+        }
+    }
+}

@@ -183,7 +183,8 @@ class App {
         if(C('CHECK_LOGIN')){
         	if(empty($_SESSION['uname']) && 'webservice'!=strtolower(MODULE_NAME)  && 'soap'!=strtolower(MODULE_NAME) &&  'webserviceclient'!=strtolower(MODULE_NAME)){
 	        	$um = new UsersModel();
-		    	$um->loginCheck();
+		    	$res = $um->loginCheck();
+                var_dump($res);exit;
         	}
         }
 
