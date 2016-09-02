@@ -35,9 +35,10 @@ if(!IS_CLI){
 }
 
 //路径设置 可在入口文件中重新定义 所有路径常量都必须以 / 结尾
-defined('CORE_PATH')    or define('CORE_PATH',THINK_PATH.'lib/');
-defined('COMMON_PATH')  or define('COMMON_PATH',APP_PATH.'Common/');
-defined('CONF_PATH')    or define('CONF_PATH',APP_PATH.'Conf/');
+defined('CORE_PATH')    or define('CORE_PATH',      THINK_PATH.'lib/');//系统核心类库目录
+defined('COMMON_PATH')  or define('COMMON_PATH',    APP_PATH.'Common/');//项目公共目录
+defined('CONF_PATH')    or define('CONF_PATH',      APP_PATH.'Conf/');//项目配置目录
+defined('TEMP_PATH')    or define('TEMP_PATH',      RUNTIME_PATH.'Temp/');//项目缓存目录
 
 //加载运行时所需要的文件并负责自动目录生成
 function load_runtime_file(){
