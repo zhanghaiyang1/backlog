@@ -138,7 +138,7 @@ function compile($filename){
  * @param   mixed  $params  传入参数
  * @return  mixed
  */
-function tag($tag, &$param){
+function tag($tag, &$param=null){
     //系统标签扩展
     $extends = C('extends.' . $tag);
     //应用标签扩展
@@ -177,6 +177,22 @@ function G($start, $end='', $dec=4){
     }else{//记录时间和内存使用
         $_info[$start] = microtime(true);
         if(MEMORY_LIMIT_ON) $_mem[$start] = memory_get_usage();
+    }
+}
+
+/*
+ * 字符串命名风格转换
+ * type 0 将Java风格转换为C风格 1  将C风格转换为Java风格
+ * @param   string  $name   字符串
+ * @param   integer $type   转换类型
+ * @return  string
+ */
+function parse_name($name, $type=0){
+    if($type){
+        return ucfirst(preg_replace("/_(a-zA-Z)/e", "strtoupper('\\1')", $name));
+    }else{
+        return($name);exit;
+        return strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $name), "_"));
     }
 }
 

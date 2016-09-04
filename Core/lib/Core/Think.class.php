@@ -108,7 +108,7 @@ class Think{
             $list = $mode['core'];
         }else{
             $list = array(
-                THINK_PAHT.'Common/functions.php',      //标准模式函数库
+                THINK_PATH.'Common/functions.php',      //标准模式函数库
                 CORE_PATH.'Core/Log.class.php',         //日志处理类
                 CORE_PATH.'Core/Dispatcher.class.php',  //URL调度类
                 CORE_PATH.'Core/App.class.php',         //应用程序类
