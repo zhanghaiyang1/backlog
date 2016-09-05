@@ -8,6 +8,9 @@ class Think{
         //设定错误和异常处理
         register_shutdown_function(array('Think','fatalError'));
         set_error_handler(array('Think','appError'));
+        set_exception_handler(array('Think', 'appException'));
+        //注册AUTOLOAD方法
+        spl_autoload_register(array('Think', 'autoload'));
 
         Think::buildApp();      //预编译项目
         App::run();             //运行应用
@@ -32,6 +35,25 @@ class Think{
             }
         }
         echo '<br>',"I'm gone";
+    }
+    /*
+     * 自定义异常处理
+     * @access  public
+     * @param   mixed   $e  异常对象
+     */
+    static public function appException($e){
+        $error = array();
+        $error['message'] = $e->getMessage();
+        $trace = $e->getTrace();
+        if('throw_exception'==$trace[0]['function']){
+            $error['file'] = $trace[0]['file'];
+            $error['line'] = $trace[0]['line'];
+        }else{
+            $error['file'] = $e->getFile();
+            $error['line'] = $e->getLine();
+        }
+        Log::record($error['message'],Log::ERR);
+        halt($error);
     }
 
     /*
@@ -158,5 +180,36 @@ class Think{
         return;
     }
 
+    /*
+     *系统自动加载Thinkphp类库
+     *并且支持配置自动加载路径
+     * @param   string  $class  类名
+     * @return  void
+     */
+    public static function autoload($class){
+        //检查是否存在别名定义
+        if(alias_import($class)) return;
+
+        $libPath = defined('BASE_LIB_PATH') ? BASE_LIB_PATH : LIB_PATH;
+        $group = defined('GROUP_NAME') && C('APP_GROUP_MODE') == 0 ? GROUP_NAME.'/':'';
+        $file  = $class.'.class.php';
+        if(substr($class, -8)=='Behavior'){ //加载行为
+            if(require_array(array(
+                CORE_PATH.'Behavior'.$file,
+                EXTEND_PATH.'Behavior'.$file,
+                LIB_PATH.'Behavior'.$file,
+                $libPath.'Behavior'.$file), true)
+                || (defined('MODE_NAME') && require_cache(MODE_PATH.ucwords(MODE_NAME).'/Behavior/'.$file))){
+                return;
+            }
+        }elseif(substr($class, -5)=='Model'){
+            if(require_array(array(
+                LIB_PATH.'Model/'.$group.$file,
+                $libPath.'Mode/'.$file,
+                EXTEND_PATH.'Model/'.$file), true)){
+                return;
+            }
+        }
+    }
 
 }

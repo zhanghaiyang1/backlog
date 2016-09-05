@@ -88,7 +88,13 @@ function C($name=null, $value=null){
 function alias_import($alias, $classfile=''){
     static $_alias = array();
     if(is_string($alias)){
-
+        if(isset($_alias[$alias])){
+            return require_cache($_alias[$alias]);
+        }elseif('' !== $classfile){
+            //定义别名导入
+            $_alias[$alias] = $classfile;
+            return;
+        }
     }elseif(is_array($alias)){
         $_alias = array_merge($_alias, $alias);
         return;
@@ -196,3 +202,15 @@ function parse_name($name, $type=0){
     }
 }
 
+/**
+ * 批量导入文件 成功则返回
+ * @param array $array 文件数组
+ * @param boolean $return 加载成功后是否返回
+ * @return boolean
+ */
+function require_array($array, $return=false){
+    foreach($array as $file){
+        if(require_cache($file) && $return) return true;
+    }
+    if($return) return false;
+}

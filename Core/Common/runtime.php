@@ -47,6 +47,7 @@ defined('TEMP_PATH')    or define('TEMP_PATH',      RUNTIME_PATH.'Temp/');//项�
 defined('LIB_PATH')     or define('LIB_PATH',       APP_PATH.'lib/');//项目类库目录
 defined('CACHE_PATH')   or define('CACHE_PATH',     RUNTIME_PATH.'Cache/');//项目模板缓存目录
 defined('LOG_PATH')   or define('LOG_PATH',         RUNTIME_PATH.'Logs/');//项目日志目录
+defined('EXTEND_PATH')   or define('EXTEND_PATH',   THINK_PATH.'Extend/');//系统扩展目录
 
 //加载运行时所需要的文件并负责自动目录生成
 function load_runtime_file(){
