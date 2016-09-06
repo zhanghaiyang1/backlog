@@ -8,8 +8,19 @@
  */
 function S($name, $value='', $options=null){
     static $cache = '';
-    if(empty($cache)){
+    if(is_array($options) && empty($cache)){
         $cache = Cache::getInstance();
+    }elseif(is_array($name)){
+
+    }elseif(empty($cache)){
+
+        $cache = Cache::getInstance();
+
+    }
+    if(''===$value){
+        return $cache->get($name);
+    }else{
+
     }
 
 }
@@ -116,4 +127,55 @@ function throw_exception($msg, $type='ThinkException', $code=0){
         throw new $type($msg, $code);
     else
         halt($msg);     //异常类型不存在则输出错误信息字符串
+}
+
+/*
+ * 错误输出
+ * @param   mixed   $error
+ * @return  void
+ */
+function halt($error){
+    $e = array();
+    if(APP_DEBUG){
+        //调试模式下输出错误信息
+        if(!is_array($error)){
+            $trace = debug_backtrace();
+            $e['message'] = $error;
+            $e['file'] = $trace[0]['file'];
+            $e['line'] = $trace[0]['line'];
+            ob_start();
+            debug_print_backtrace();
+            $e['trace'] = ob_get_clean();
+        }else{
+            $e = $error;
+        }
+    }else{
+
+    }
+    var_dump($e);die;
+}
+
+/*
+ * 获取客户端iP地址
+ * @param   integer $type   返回类型    0返回ip地址  1返回ipv4地址数字
+ * @return  mixed
+ */
+function get_client_ip($type){
+    $type = $type ? 1 : 0;
+    static $ip = null;
+    if($ip !== null) return $ip[$type];
+    if(isset($_SERVER['HTTP_X_FORWARDED_FOR'])){
+        $arr = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+        $pos = array_search('unknown', $arr);
+        if(false!== $pos) unset($arr[$pos]);
+        $ip = trim($arr[0]);
+    }elseif(isset($_SERVER['HTTP_CLIENT_IP'])){
+        $ip = $_SERVER['HTTP_CLIENT_IP'];
+    }elseif(isset($_SERVER['REMOTE_ADDR'])){
+        $ip = $_SERVER['REMOTE_ADDR'];
+    }
+    //IP地址合法验证
+    $long = sprintf("%u", ip2long($ip));
+    $ip = $long ? array($ip, $long) : array('0.0.0.0', 0);
+    return $ip[$type];
 }

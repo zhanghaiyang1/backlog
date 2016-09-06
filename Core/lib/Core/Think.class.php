@@ -90,7 +90,6 @@ class Think{
      */
 
     static private function buildApp(){
-        echo 'buildApp';
         //读取运行模式
         if(defined('MODE_NAME')){
             $mode = include MODE_PATH.strtolower(MODE_NAME).'php';
@@ -207,6 +206,18 @@ class Think{
                 LIB_PATH.'Model/'.$group.$file,
                 $libPath.'Mode/'.$file,
                 EXTEND_PATH.'Model/'.$file), true)){
+                return;
+            }
+        }elseif(substr($class, 0, 2)=='Db'){    //加载数据库驱动
+            if(require_array(array(
+                EXTEND_PATH.'Driver/Db/'.$file,
+                CORE_PATH.'Driver/Db/'.$file), true)){
+                return;
+            }
+        }elseif(substr($class, 0, 5)=='Cache'){  //加载缓存驱动
+            if(require_array(array(
+                EXTEND_PATH.'Driver/Cache/'.$file,
+                CORE_PATH.'Driver/Cache/'.$file), true)){
                 return;
             }
         }
