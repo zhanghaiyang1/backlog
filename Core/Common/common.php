@@ -32,7 +32,7 @@ function require_cache($filename){
  */
 function file_exists_case($filename){
     if(is_file($filename)){
-        if(IS_WIN && C('APP_FILE_CASE')){
+           if(IS_WIN && C('APP_FILE_CASE')){
             if(basename(realpath($filename)) != basename($filename)){
                 return false;
             }
@@ -66,6 +66,13 @@ function C($name=null, $value=null){
                 return;
             }
         }
+        //二维数组设置和获取支持
+        $name = explode('.', $name);
+        $name[0] = strtolower($name[0]);
+        if(is_null($value))
+            return isset($_config[$name[0]][$name[1]]) ? $_config[$name[0]][$name[1]] : null;
+        $_config[$name[0]][$name[1]] = $value;
+        return;
     }
 
     if(is_array($name)){
@@ -88,7 +95,13 @@ function C($name=null, $value=null){
 function alias_import($alias, $classfile=''){
     static $_alias = array();
     if(is_string($alias)){
-
+        if(isset($_alias[$alias])){
+            return require_cache($_alias[$alias]);
+        }elseif('' !== $classfile){
+            //定义别名导入
+            $_alias[$alias] = $classfile;
+            return;
+        }
     }elseif(is_array($alias)){
         $_alias = array_merge($_alias, $alias);
         return;
@@ -196,3 +209,71 @@ function parse_name($name, $type=0){
     }
 }
 
+/**
+ * 批量导入文件 成功则返回
+ * @param array $array 文件数组
+ * @param boolean $return 加载成功后是否返回
+ * @return boolean
+ */
+function require_array($array, $return=false){
+    foreach($array as $file){
+        if(require_cache($file) && $return) return true;
+    }
+    if($return) return false;
+}
+
+/*
+ * 加解密函数，注加密串中不允许包括/-=+等字符
+ * @param   boolean $is_crypt   true加密  $str需传明文串；  false为解密,$str需传加密后的串
+ */
+function str_ed_crypt($str, $is_crypt=true, $keyStr='hc'){
+    if($str){
+        import('ORG.Crypt.CryptAES');
+    }else{
+        return '';
+    }
+}
+
+/*
+ * 导入类库，同Java的import，本函数有缓存功能
+ * @param   string  $class      类库命名空间字符串
+ * @param   string  $baseUrl    起始路径
+ * @param   string  $ext        导入的文件扩展名
+ * @return  boolean
+ */
+function import($class, $baseUrl = '', $ext = '.class.php'){
+    static $file = array();
+    $class = str_replace(array('.', '#'), array('/', '.'), $class);
+    if($baseUrl===''){
+        die(1);
+    }else{
+        die(2);
+    }
+}
+
+/*
+ * 设置和获取统计数据
+ * 使用方法：
+ * <code>
+ * N('db',1);       记录数据库操作次数
+ * N('read',1);     记录读取次数
+ * echo N('db');    获取当前页面数据库的所有操作次数
+ * echo N('read');  获取当前页面读取次数
+ * </code>
+ * @param   string  $key    标识位置
+ * @param   integer $step   步进值
+ * @return  mixed
+ */
+function N($key, $step=0, $save=false){
+    static $_num = array();
+    if(!isset($_num[$key])){
+        $_num[$key] = (false !== $save) ? S('N_'.$key) : 0;
+    }
+    if(empty($step))
+        return $_num[$key];
+    else
+        $_num[$key] = $_num[$key] + (int) $step;
+    if(false!==$save){
+        S('N_'.$key, $_num[$key], $save);
+    }
+}
