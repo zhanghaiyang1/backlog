@@ -11,7 +11,7 @@ class UsersModel extends AdminModel{
         if(empty($session)){
             if(empty($_SESSION['uname'])){
                 $server = getallheaders();
-                var_dump($server);exit;
+
                 if('ajax-request'==$server['Request-Type']){
                     die(json_encode(array('status'=>'301', 'mess'=>'请重新登陆')));
                 }
