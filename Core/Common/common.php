@@ -155,7 +155,7 @@ function tag($tag, &$param=null){
     //系统标签扩展
     $extends = C('extends.' . $tag);
     //应用标签扩展
-    $tags = C('tags' . $tag);
+    $tags = C('tags.' . $tag);
     if($tags){
 
     }else{
